@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-    - uses: actions/checkout@v4
+      uses: actions/checkout@v4
     - name: Build
       run: cargo build --release --verbose
     - name: Test
       run: cargo test --verbose
     - name: Upload
-    - uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
         name: pngme
         path: ./target/release/pngme
