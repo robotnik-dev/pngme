@@ -2,7 +2,7 @@
 
 ## Installation
 
-Head over to the [latest Release](https://github.com/robotnik-dev/pngme/releases) and download the binary.
+Head over to the [latest Release](https://github.com/robotnik-dev/pngme/releases/latest) and download the binary.
 
 ## Usage
 ```shell
