@@ -10,6 +10,16 @@ pub fn encode(args: EncodeArgs) -> Result<()> {
     let file_contents = fs::read(&args.file_path)?;
     let mut png = Png::try_from(file_contents.as_ref())?;
     let chunk_type = ChunkType::from_str(&args.chunk_type)?;
+    let chunk = png
+        .chunks()
+        .iter()
+        .find(|c| c.chunk_type().bytes() == chunk_type.bytes());
+    if let Some(c) = chunk {
+        if !c.chunk_type().is_safe_to_write() {
+            println!("Cannot add message to important chunk: {}", c.chunk_type());
+            return Ok(());
+        }
+    }
     let chunk = Chunk::new(chunk_type, args.message.as_bytes().to_vec());
     png.append_chunk(chunk);
     if let Some(file) = args.output_file {
@@ -17,6 +27,7 @@ pub fn encode(args: EncodeArgs) -> Result<()> {
     } else {
         fs::write(&args.file_path, png.as_bytes())?;
     }
+    println!("Message embedded successfully");
     Ok(())
 }
 
@@ -28,12 +39,11 @@ pub fn decode(args: DecodeArgs) -> Result<()> {
         .chunks()
         .iter()
         .find(|chunk| chunk.chunk_type().bytes() == chunk_type.bytes());
-
     if let Some(c) = chunk {
         let message = c.data_as_string()?;
         println!("{}", message);
     } else {
-        println!("no message decoded");
+        println!("No message with this chunk type found: {}", args.chunk_type);
     }
     Ok(())
 }
@@ -45,9 +55,12 @@ pub fn remove(args: RemoveArgs) -> Result<()> {
     let removed = png.remove_chunk(chunk_type);
     if let Ok(_) = removed {
         fs::write(&args.file_path, png.as_bytes())?;
-        println!("message removed");
+        println!("Message removed successfully");
     } else {
-        println!("no message to remove");
+        println!(
+            "No message with this chunk type to remove: {}",
+            args.chunk_type
+        );
     }
     Ok(())
 }

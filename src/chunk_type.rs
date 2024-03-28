@@ -50,26 +50,26 @@ impl ChunkType {
         self.data
     }
 
+    pub fn is_safe_to_write(&self) -> bool {
+        !self.is_critical() && !self.is_public() && !self.is_reserved_bit_valid() && !self.is_safe_to_copy()
+    }
+
     /// Returns the property state of the first byte
-    #[allow(dead_code)]
     pub fn is_critical(&self) -> bool {
         self.data[0].is_ascii_uppercase()
     }
 
     /// Returns the property state of the second byte 
-    #[allow(dead_code)]
     pub fn is_public(&self) -> bool {
         self.data[1].is_ascii_uppercase()
     }
 
     /// Returns the property state of the third byte 
-    #[allow(dead_code)]
     pub fn is_reserved_bit_valid(&self) -> bool {
         self.data[2].is_ascii_uppercase()
     }
 
     /// Returns the property state of the fourth byte
-    #[allow(dead_code)]
     pub fn is_safe_to_copy(&self) -> bool {
         self.data[3].is_ascii_lowercase()
     }

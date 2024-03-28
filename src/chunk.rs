@@ -37,10 +37,9 @@ impl TryFrom<&[u8]> for Chunk {
         };
 
         if !chunk.is_valid() {
-            Err("invalid chunk type".into())
+            Err("Invalid chunk type".into())
         } else if crc != correct_crc {
-            println!("crc: {} correct crc: {}", crc, correct_crc);
-            Err("invalid crc".into())
+            Err("Invalid crc".into())
         } else {
             Ok(chunk)
         }
