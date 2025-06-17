@@ -35,7 +35,7 @@ impl Png {
                 return Ok(removed_chunk);
             }
         }
-        return Err("Chunk not found".into());
+        Err("Chunk not found".into())
     }
 
     /// The header of this PNG.
@@ -53,12 +53,9 @@ impl Png {
     /// matching `Chunk` from this `Png`.
     #[allow(dead_code)]
     pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
-        for (_index, chunk) in self.chunks.iter().enumerate() {
-            if chunk.chunk_type().to_string() == chunk_type {
-                return Some(&chunk);
-            }
-        }
-        None
+        self.chunks
+            .iter()
+            .find(|&c| c.chunk_type().to_string() == chunk_type)
     }
 
     /// Returns this `Png` as a byte sequence.
@@ -245,7 +242,8 @@ mod tests {
     fn test_remove_chunk() {
         let mut png = testing_png();
         png.append_chunk(chunk_from_strings("TeSt", "Message").unwrap());
-        png.remove_chunk(ChunkType::from_str("TeSt").unwrap()).unwrap();
+        png.remove_chunk(ChunkType::from_str("TeSt").unwrap())
+            .unwrap();
         let chunk = png.chunk_by_type("TeSt");
         assert!(chunk.is_none());
     }

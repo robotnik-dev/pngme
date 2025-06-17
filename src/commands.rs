@@ -52,8 +52,7 @@ pub fn remove(args: RemoveArgs) -> Result<()> {
     let file_contents = fs::read(&args.file_path)?;
     let mut png = Png::try_from(file_contents.as_ref())?;
     let chunk_type = ChunkType::from_str(&args.chunk_type)?;
-    let removed = png.remove_chunk(chunk_type);
-    if let Ok(_) = removed {
+    if png.remove_chunk(chunk_type).is_ok() {
         fs::write(&args.file_path, png.as_bytes())?;
         println!("Message removed successfully");
     } else {
@@ -69,10 +68,10 @@ pub fn print(args: PrintArgs) -> Result<()> {
     let file_contents = fs::read(&args.file_path)?;
     let png = Png::try_from(file_contents.as_ref())?;
     let chunks = png.chunks().to_vec();
-    let chunks_with_message = chunks
+    let maybe_chunks_with_message = chunks
         .split(|chunk| chunk.chunk_type().bytes().as_ref() == b"IEND")
-        .last();
-    if let Some(chunks) = chunks_with_message {
+        .next_back();
+    if let Some(chunks) = maybe_chunks_with_message {
         for chunk in chunks {
             println!("{}", chunk.chunk_type());
         }
