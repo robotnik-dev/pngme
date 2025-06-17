@@ -24,7 +24,8 @@ pub enum Commands {
 pub struct EncodeArgs {
     /// Path to the PNG file
     pub file_path: PathBuf,
-    /// Name of the chunk to hide the message in
+    /// This is used for decoding later. Must be 4 characters long!
+    /// e.g. "HaHa" (note the capital letters)
     pub chunk_type: String,
     /// Message to hide in the PNG file
     pub message: String,
@@ -36,7 +37,7 @@ pub struct EncodeArgs {
 pub struct DecodeArgs {
     /// Path to the PNG file
     pub file_path: PathBuf,
-    /// Name of the chunk where the message is hidden
+    /// Decoding String used while encoding e.g."HaHa"
     pub chunk_type: String,
 }
 
@@ -44,7 +45,7 @@ pub struct DecodeArgs {
 pub struct RemoveArgs {
     /// Path to the PNG file
     pub file_path: PathBuf,
-    /// Name of the chunk where the message is hidden and should be removed
+    /// Name of the Decoding String where the message is hidden and should be removed from
     pub chunk_type: String,
 }
 

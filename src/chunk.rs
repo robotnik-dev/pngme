@@ -59,17 +59,16 @@ impl std::fmt::Display for Chunk {
 }
 
 impl Chunk {
-    pub fn new(chunk_type: crate::chunk_type::ChunkType, data: Vec<u8>) -> Chunk {
+    pub fn new(chunk_type: crate::chunk_type::ChunkType, data: Vec<u8>) -> Self {
         let length = data.len() as u32;
         let crc = crc::Crc::<u32>::new(&CRC_32_ISO_HDLC)
             .checksum(&[chunk_type.bytes().as_ref(), &data].concat());
-        let chunk = Chunk {
+        Chunk {
             length,
             chunk_type,
             data,
             crc,
-        };
-        chunk
+        }
     }
 
     pub fn length(&self) -> u32 {
@@ -79,7 +78,7 @@ impl Chunk {
     pub fn chunk_type(&self) -> crate::chunk_type::ChunkType {
         self.chunk_type
     }
-    
+
     pub fn data(&self) -> &[u8] {
         &self.data
     }
@@ -91,7 +90,7 @@ impl Chunk {
     pub fn crc(&self) -> u32 {
         self.crc
     }
-    
+
     pub fn is_valid(&self) -> bool {
         self.chunk_type.is_valid()
     }
