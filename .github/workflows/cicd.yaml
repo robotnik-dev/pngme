@@ -16,22 +16,27 @@ jobs:
           - os-name: Linux-x86_64
             runs-on: ubuntu-24.04
             target: x86_64-unknown-linux-musl
+            extension: ""
 
           - os-name: Linux-aarch64
             runs-on: ubuntu-24.04
             target: aarch64-unknown-linux-musl
+            extension: ""
 
           - os-name: Windows-x86_64
             runs-on: windows-latest
             target: x86_64-pc-windows-msvc
+            extension: ".exe"
 
           - os-name: macOS-x86_64
             runs-on: macOS-latest
             target: x86_64-apple-darwin
+            extension: ""
 
           - os-name: macOS-aarch64
             runs-on: macOS-latest
             target: aarch64-apple-darwin
+            extension: ""
 
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -57,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os-name }}
-          path: target/${{ matrix.target }}/release/pngme
+          path: target/${{ matrix.target }}/release/pngme${{ matrix.extension }}
           retention-days: 1
 
 
@@ -70,23 +75,18 @@ jobs:
         include:
           - os-name: Linux-x86_64
             runs-on: ubuntu-24.04
-            target: x86_64-unknown-linux-musl
 
           - os-name: Linux-aarch64
             runs-on: ubuntu-24.04
-            target: aarch64-unknown-linux-musl
 
           - os-name: Windows-x86_64
             runs-on: windows-latest
-            target: x86_64-pc-windows-msvc
 
           - os-name: macOS-x86_64
             runs-on: macOS-latest
-            target: x86_64-apple-darwin
 
           - os-name: macOS-aarch64
             runs-on: macOS-latest
-            target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.runs-on }}
     steps:
