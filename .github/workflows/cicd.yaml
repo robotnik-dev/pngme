@@ -58,11 +58,20 @@ jobs:
           args: "--locked --release"
           strip: true
 
+      - name: Rename and upload binary
+        shell: bash
+        run: |
+          # Create release directory
+          mkdir -p release
+
+          # Copy and rename binary with target-specific name
+          cp target/${{ matrix.target }}/release/pngme${{ matrix.extension }} release/pngme-${{ matrix.os-name }}${{ matrix.extension }}
+
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os-name }}
-          path: target/${{ matrix.target }}/release/pngme${{ matrix.extension }}
+          path: release/pngme-${{ matrix.os-name }}${{ matrix.extension }}
           retention-days: 1
 
 
@@ -95,6 +104,7 @@ jobs:
       - name: Download all release assets
         uses: actions/download-artifact@v4
         with:
+          merge-multiple: true
           path: release
 
       - name: Create GitHub Release
@@ -108,4 +118,4 @@ jobs:
           generate_release_notes: true
           append_body: true
           files: |
-            release/**/*
+            release/*
