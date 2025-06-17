@@ -58,16 +58,11 @@ jobs:
           args: "--locked --release"
           strip: true
 
-      - name: Zip Artifacts
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r artifacts/${{ matrix.os-name }}.zip target/${{ matrix.target }}/release/pngme${{ matrix.extension }}
-
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os-name }}
-          path: artifacts/*.zip
+          path: target/${{ matrix.target }}/release/pngme${{ matrix.extension }}
           retention-days: 1
 
 
