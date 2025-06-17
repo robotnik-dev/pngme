@@ -46,7 +46,6 @@ jobs:
           args: "--locked --release"
 
       - name: Build ${{ matrix.os-name }} binary
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: houseabsolute/actions-rust-cross@v1.0.4
         with:
           command: build
