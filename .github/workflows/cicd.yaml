@@ -108,4 +108,4 @@ jobs:
           generate_release_notes: true
           append_body: true
           files: |
-            release/*
+            release/**/*
