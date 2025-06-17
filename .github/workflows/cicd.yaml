@@ -58,57 +58,23 @@ jobs:
           args: "--locked --release"
           strip: true
 
+      - name: Zip Artifacts
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r artifacts/${{ matrix.os-name }}.zip target/${{ matrix.target }}/release/pngme${{ matrix.extension }}
+
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os-name }}
-          path: target/${{ matrix.target }}/release/pngme${{ matrix.extension }}
-          retention-days: 1
-
-
-  prepare-release:
-    needs: ci
-    name: Prepare release - ${{ matrix.os-name }}
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    strategy:
-      matrix:
-        include:
-          - os-name: Linux-x86_64
-            runs-on: ubuntu-24.04
-
-          - os-name: Linux-aarch64
-            runs-on: ubuntu-24.04
-
-          - os-name: Windows-x86_64
-            runs-on: windows-latest
-
-          - os-name: macOS-x86_64
-            runs-on: macOS-latest
-
-          - os-name: macOS-aarch64
-            runs-on: macOS-latest
-
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-      - name: Download artifact
-        id: download-artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.os-name }}
-          path: artifacts/${{ matrix.os-name }}
-
-      - name: Upload artifact for release job
-        uses: actions/upload-artifact@v4
-        with:
-          name: pngme_${{ matrix.os-name }}
-          path: artifacts/${{ matrix.os-name }}
+          path: artifacts/*.zip
           retention-days: 1
 
 
   bump-version:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: prepare-release
+    needs: ci
     permissions: write-all
     outputs:
       new-tag: ${{ steps.autotag.outputs.new-tag }}
@@ -126,7 +92,7 @@ jobs:
   create-release:
     name: Create Release
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [bump-version, prepare-release]
+    needs: bump-version
     permissions:
       contents: write
     runs-on: ubuntu-latest
