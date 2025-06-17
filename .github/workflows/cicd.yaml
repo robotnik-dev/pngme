@@ -58,20 +58,30 @@ jobs:
           args: "--locked --release"
           strip: true
 
-      - name: Rename and upload binary
+      - name: Create archive with binary name
         shell: bash
         run: |
           # Create release directory
           mkdir -p release
 
-          # Copy and rename binary with target-specific name
-          cp target/${{ matrix.target }}/release/pngme${{ matrix.extension }} release/pngme-${{ matrix.os-name }}${{ matrix.extension }}
+          # Copy binary to a temp directory with original name
+          mkdir -p temp
+          cp target/${{ matrix.target }}/release/pngme${{ matrix.extension }} temp/pngme${{ matrix.extension }}
 
-      - name: Upload binary
+          # Create platform-specific archive
+          if [[ "${{ matrix.extension }}" == ".exe" ]]; then
+            # Create zip for Windows
+            cd temp && zip -r ../release/pngme-${{ matrix.os-name }}.zip pngme${{ matrix.extension }}
+          else
+            # Create tar.gz for Unix-like systems
+            cd temp && tar -czf ../release/pngme-${{ matrix.os-name }}.tar.gz pngme${{ matrix.extension }}
+          fi
+
+      - name: Upload archive
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os-name }}
-          path: release/pngme-${{ matrix.os-name }}${{ matrix.extension }}
+          path: release/pngme-${{ matrix.os-name }}.*
           retention-days: 1
 
 
