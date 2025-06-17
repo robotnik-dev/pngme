@@ -57,8 +57,22 @@ jobs:
           target: ${{ matrix.target }}
           args: "--locked --release"
           strip: true
+      - name: Create archive with original binary name (Windows)
+        if: matrix.extension == '.exe'
+        shell: pwsh
+        run: |
+          # Create release directory
+          New-Item -ItemType Directory -Force -Path release
 
-      - name: Create archive with binary name
+          # Copy binary to temp directory with original name
+          New-Item -ItemType Directory -Force -Path temp
+          Copy-Item "target/${{ matrix.target }}/release/pngme${{ matrix.extension }}" "temp/pngme${{ matrix.extension }}"
+
+          # Create zip archive using PowerShell
+          Compress-Archive -Path "temp/pngme${{ matrix.extension }}" -DestinationPath "release/pngme-${{ matrix.os-name }}.zip"
+
+      - name: Create archive with original binary name (Unix)
+        if: matrix.extension == ''
         shell: bash
         run: |
           # Create release directory
@@ -68,14 +82,8 @@ jobs:
           mkdir -p temp
           cp target/${{ matrix.target }}/release/pngme${{ matrix.extension }} temp/pngme${{ matrix.extension }}
 
-          # Create platform-specific archive
-          if [[ "${{ matrix.extension }}" == ".exe" ]]; then
-            # Create zip for Windows
-            cd temp && zip -r ../release/pngme-${{ matrix.os-name }}.zip pngme${{ matrix.extension }}
-          else
-            # Create tar.gz for Unix-like systems
-            cd temp && tar -czf ../release/pngme-${{ matrix.os-name }}.tar.gz pngme${{ matrix.extension }}
-          fi
+          # Create tar.gz for Unix-like systems
+          cd temp && tar -czf ../release/pngme-${{ matrix.os-name }}.tar.gz pngme${{ matrix.extension }}
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
